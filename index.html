@@ -102,10 +102,6 @@
     <div class="dialog" id="dialog">
       <h2 id="dialogTitle">Título editable</h2>
       <p id="dialogText">Texto editable por flor.</p>
-      <div class="actions">
-        <button class="btn sec" id="closeBtn">Cerrar</button>
-        <button class="btn prim" id="nextBtn">Siguiente</button>
-      </div>
     </div>
   </div>
 
@@ -135,8 +131,6 @@ const TULIP_URLS = [
     const overlay = document.getElementById('overlay');
     const dialogTitle = document.getElementById('dialogTitle');
     const dialogText = document.getElementById('dialogText');
-    const closeBtn = document.getElementById('closeBtn');
-    const nextBtn = document.getElementById('nextBtn');
     const stage = document.getElementById('stage');
     const playBtn = document.getElementById('playBtn');
     let currentIndex = 0;
@@ -180,9 +174,7 @@ const TULIP_URLS = [
         if(!audioStarted){ audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{}); }
       });
     });
-
-    closeBtn.addEventListener('click', closeModal);
-    nextBtn.addEventListener('click', ()=>{ currentIndex = (currentIndex + 1) % MESSAGES.length; openModal(currentIndex); });
+    
     overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
 
     // Accessibility: close with ESC
