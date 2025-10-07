@@ -39,7 +39,7 @@
     @keyframes shimmerMove{0%{transform:translate(-6%,-4%) scale(1)}50%{transform:translate(6%,4%) scale(1.02)}100%{transform:translate(-6%,-4%) scale(1)}}
 
     /* Ramo central */
-    .ramo{position:relative;z-index:10;display:flex;align-items:flex-end;gap:22px;transform:translateY(4%);pointer-events:auto}
+    .ramo {position: absolute;bottom: 20px;left: 50%;transform: translateX(-50%);display: flex;justify-content: center;align-items: flex-end;gap: 16px;z-index: 10;pointer-events: auto;}
     .tulip-wrap{width:var(--tulip-width);display:flex;align-items:flex-end;justify-content:center;transform-origin:50% 100%}
     .tulip{width:100%;height:auto;display:block;border-radius:10px;cursor:pointer;user-select:none;transform-origin:50% 100%;box-shadow:0 10px 28px rgba(0,0,0,0.12);transition:transform .26s cubic-bezier(.2,.9,.3,1), filter .18s;will-change:transform, filter}
     .tulip:active{transform:translateY(6px) scale(.98)}
@@ -82,7 +82,7 @@
 
     .note{position:absolute;left:20px;bottom:18px;font-size:13px;color:#666;z-index:80}
 
-    @media (max-width:720px){:root{--tulip-width:110px} .dialog{padding:16px}}
+    @media (max-width:720px){:root{--tulip-width:100px} .dialog{padding:16px}}
   </style>
 </head>
 <body>
@@ -95,15 +95,10 @@
     </div>
 
     <div class="ramo" id="ramo" aria-hidden="false">
-      <div class="tulip-wrap pos1"><img class="tulip" src="https://images.unsplash.com/photo-1524594154907-6b1c8c5f0b0f?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 1" data-index="0"></div>
-      <div class="tulip-wrap pos2"><img class="tulip" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 2" data-index="1"></div>
-      <div class="tulip-wrap pos3"><img class="tulip" src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 3" data-index="2"></div>
-      <div class="tulip-wrap pos4"><img class="tulip" src="https://images.unsplash.com/photo-1470167290877-7d5d3447f58b?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 4" data-index="3"></div>
-      <div class="tulip-wrap pos5"><img class="tulip" src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 5" data-index="4"></div>
+      <div class="tulip-wrap pos1"><img class="tulip" src="img/tulip.png" alt="Tulipán 1" data-index="0"></div>
+      <div class="tulip-wrap pos2"><img class="tulip" src="img/tulip.png" alt="Tulipán 2" data-index="1"></div>
+      <div class="tulip-wrap pos3"><img class="tulip" src="img/tulip.png" alt="Tulipán 3" data-index="2"></div>
     </div>
-
-    <div class="note">Haz clic en cada tulipán para ver su mensaje.</div>
-  </div>
 
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="dialog" id="dialog">
@@ -121,20 +116,17 @@
        CONFIGURACIÓN: Edita aquí
        ------------------------- */
     const MESSAGES = [
-      { title: "Tulipán 1", text: "Mensaje para el primer tulipán." },
-      { title: "Tulipán 2", text: "Mensaje para el segundo tulipán." },
-      { title: "Tulipán 3", text: "Mensaje para el tercer tulipán." },
-      { title: "Tulipán 4", text: "Mensaje para el cuarto tulipán." },
-      { title: "Tulipán 5", text: "Mensaje para el quinto tulipán." }
-    ];
+  { title: "Mi amor", text: "Te quiero" },
+  { title: "Mi novia", text: "Te adoro" },
+  { title: "Mi vida", text: "Te amo!" }
+];
 
-    const TULIP_URLS = [
-      'https://images.unsplash.com/photo-1524594154907-6b1c8c5f0b0f?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
-      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
-      'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
-      'https://images.unsplash.com/photo-1470167290877-7d5d3447f58b?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
-      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s='
-    ];
+const TULIP_URLS = [
+  'img/tulip.png',
+  'img/tulip.png',
+  'img/tulip.png'
+];
+
 
     const AUDIO_SRC = 'https://docs.google.com/uc?export=download&id=1VKw9AfTziD_mw7kVuIvX4eybVG-e9daG';
 
