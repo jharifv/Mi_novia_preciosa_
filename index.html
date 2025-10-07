@@ -40,21 +40,18 @@
 
     /* Ramo central */
     .ramo {position: absolute;bottom: 20px;left: 50%;transform: translateX(-50%);display: flex;justify-content: center;align-items: flex-end;gap: 16px;z-index: 10;pointer-events: auto;}
-    .tulip-wrap{width:var(--tulip-width);display:flex;align-items:flex-end;justify-content:center;transform-origin:50% 100%}
+    .tulip-wrap {width: var(--tulip-width);display: flex;align-items: flex-end;justify-content: center;transform-origin: 50% 100%;opacity: 0;transform: translateY(18px) scale(.95);
+                }
     .tulip{width:100%;height:auto;display:block;border-radius:10px;cursor:pointer;user-select:none;transform-origin:50% 100%;box-shadow:0 10px 28px rgba(0,0,0,0.12);transition:transform .26s cubic-bezier(.2,.9,.3,1), filter .18s;will-change:transform, filter}
     .tulip:active{transform:translateY(6px) scale(.98)}
-
-    /* Entrada suave escalonada */
-    .tulip-wrap{opacity:0;transform:translateY(18px) scale(.95)}
+    
     .tulip-wrap:nth-child(1){animation:popIn .7s .05s both cubic-bezier(.2,.9,.3,1)}
     .tulip-wrap:nth-child(2){animation:popIn .7s .12s both cubic-bezier(.2,.9,.3,1)}
     .tulip-wrap:nth-child(3){animation:popIn .7s .19s both cubic-bezier(.2,.9,.3,1)}
-    .tulip-wrap:nth-child(4){animation:popIn .7s .26s both cubic-bezier(.2,.9,.3,1)}
-    .tulip-wrap:nth-child(5){animation:popIn .7s .33s both cubic-bezier(.2,.9,.3,1)}
     @keyframes popIn{0%{opacity:0;transform:translateY(18px) scale(.95)}60%{opacity:1;transform:translateY(-6px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
 
     /* Posiciones organicas (rotaciones / offsets) */
-    .tulip-wrap.pos1{transform:translateY(14px) rotate(-8deg) scale(.98}
+    .tulip-wrap.pos1{transform:translateY(14px) rotate(-8deg) scale(.98)}
     .tulip-wrap.pos2{transform:translateY(8px) rotate(6deg) scale(.95)}
     .tulip-wrap.pos3{transform:translateY(0px) rotate(-2deg) scale(1.08)}
 
@@ -100,8 +97,8 @@
 
   <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="dialog" id="dialog">
-      <h2 id="dialogTitle">Título editable</h2>
-      <p id="dialogText">Texto editable por flor.</p>
+      <h2 id="dialogTitle">Espera</h2>
+      <p id="dialogText">Presiona cada tulipan</p>
     </div>
   </div>
 
