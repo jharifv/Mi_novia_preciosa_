@@ -15,7 +15,7 @@
       --accent: #ff7ab6;          /* acento palo rosa */
       --text: #2c2c2c;
       --blur-strength: 6px;
-      --tulip-width: 220px;
+      --tulip-width: 240px;
       --page-padding: 18px;
       --max-width: 1200px;
       --shadow: 0 12px 30px rgba(0,0,0,0.12);
@@ -130,6 +130,11 @@ const TULIP_URLS = [
 
 
     const AUDIO_SRC = 'https://docs.google.com/uc?export=download&id=1VKw9AfTziD_mw7kVuIvX4eybVG-e9daG';
+    // ---------- audio global ----------
+let audio = null;          // se asignará después al elemento <audio>
+let audioStarted = false;  // flag global usado por otros handlers
+const ramoEl = document.getElementById('ramo'); // referencia para blur
+// -
 
     /* -------------------------
        LÓGICA (no hace falta editar)
@@ -160,37 +165,69 @@ const TULIP_URLS = [
       ramoE1.classList.remove('blurred');
     }
 
-    tulips.forEach((t, idx)=>{
-      t.addEventListener('click', ()=>{
-        openModal(idx);
-        if(!audioStarted){ audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{}); }
-      });
-    });
+    tulips.forEach((t, idx) => {
+  t.addEventListener('click', () => {
+    openModal(idx);
+
+    // Intentar arrancar el audio si existe (mejor UX en móviles)
+    const audioEl = document.getElementById('bg-music');
+    const playButton = document.getElementById('playBtn');
+    if (audioEl && audioEl.paused) {
+      audioEl.play().then(() => {
+        if (playButton) playButton.textContent = '⏸';
+      }).catch(()=>{ /* autoplay bloqueado — se iniciará con interacción */ });
+    }
+  });
+});
+
     
     overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
 
     // Accessibility: close with ESC
     window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
   </script>
-    <audio id="bg-music" autoplay loop>
+    <audio id="bg-music" loop>
   <source src="https://docs.google.com/uc?export=download&id=1VKw9AfTziD_mw7kVuIvX4eybVG-e9daG" type="audio/mpeg">
   Tu navegador no soporta audio HTML5.
 </audio>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const audio = document.getElementById('bg-music');
-    audio.volume = 0.5;
+document.addEventListener('DOMContentLoaded', function () {
+  const audio = document.getElementById('bg-music');
+  const playBtn = document.getElementById('playBtn');
 
-    const playAudio = () => {
-      audio.play().catch(() => {
-        console.log('⚠️ Reproducción automática bloqueada por el navegador.');
-      });
-    };
+  if (!audio) return;
+  audio.volume = 0.6;
 
-    playAudio();
-    document.body.addEventListener('click', playAudio, { once: true });
-  });
-</script>   
+  const tryPlay = () => {
+    audio.play().then(() => {
+      if (playBtn) playBtn.textContent = '⏸';
+    }).catch((err) => {
+      // Autoplay bloqueado — normal en móviles. Esperamos interacción.
+      console.log('Autoplay bloqueado:', err);
+    });
+  };
+
+  // Intento inmediato (puede ser bloqueado)
+  tryPlay();
+
+  // Si el intento falló, se activará en el primer click en la página
+  document.body.addEventListener('click', tryPlay, { once: true });
+
+  // Control del botón visible
+  if (playBtn) {
+    playBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // evita que cuente como "primer click"
+      if (audio.paused) {
+        audio.play().then(()=>{ playBtn.textContent = '⏸'; }).catch(()=>{});
+      } else {
+        audio.pause();
+        playBtn.textContent = '▶︎';
+      }
+    });
+  }
+});
+</script>
 </body>
 </html>
 
