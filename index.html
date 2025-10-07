@@ -15,7 +15,7 @@
       --accent: #ff7ab6;          /* acento palo rosa */
       --text: #2c2c2c;
       --blur-strength: 6px;
-      --tulip-width: 150px;
+      --tulip-width: 220px;
       --page-padding: 18px;
       --max-width: 1200px;
       --shadow: 0 12px 30px rgba(0,0,0,0.12);
@@ -42,6 +42,13 @@
     .ramo {position: absolute;bottom: 20px;left: 50%;transform: translateX(-50%);display: flex;justify-content: center;align-items: flex-end;gap: 16px;z-index: 10;pointer-events: auto;}
     .tulip-wrap {width: var(--tulip-width);display: flex;align-items: flex-end;justify-content: center;transform-origin: 50% 100%;opacity: 0;transform: translateY(18px) scale(.95);
                 }
+    .ramo { gap: 0; }
+    .tulip-wrap { margin-left: -80px; }
+    .tulip-wrap:first-child { margin-left: 0; }
+    .tulip { border-radius: 12px; box-shadow: 0 14px 34px rgba(0,0,0,0.16); }
+    .overlay { z-index: 9999; }
+    .dialog  { z-index: 10000; } 
+    
     .tulip{width:100%;height:auto;display:block;border-radius:10px;cursor:pointer;user-select:none;transform-origin:50% 100%;box-shadow:0 10px 28px rgba(0,0,0,0.12);transition:transform .26s cubic-bezier(.2,.9,.3,1), filter .18s;will-change:transform, filter}
     .tulip:active{transform:translateY(6px) scale(.98)}
     
@@ -79,6 +86,8 @@
 
     @media (max-width:720px){:root{--tulip-width:100px} .dialog{padding:16px}}
     audio {display: none;}
+    .ramo.blurred {filter: blur(var(--blur-strength)); transition: filter .24s;pointer-events: none;opacity: 0.99;
+                  }
   </style>
 </head>
 <body>
@@ -131,6 +140,7 @@ const TULIP_URLS = [
     const dialogText = document.getElementById('dialogText');
     const stage = document.getElementById('stage');
     const playBtn = document.getElementById('playBtn');
+    const ramoEl = document.getElementById('ramo');
     let currentIndex = 0;
 
     function applyTulips(){ document.querySelectorAll('.tulip').forEach((img,i)=> img.src = TULIP_URLS[i % TULIP_URLS.length]); }
@@ -142,12 +152,12 @@ const TULIP_URLS = [
       dialogText.textContent = MESSAGES[i].text;
       overlay.classList.add('show');
       overlay.setAttribute('aria-hidden','false');
-      stage.classList.add('blurred');
+      ramoE1.classList.add('blurred');
     }
     function closeModal(){
       overlay.classList.remove('show');
       overlay.setAttribute('aria-hidden','true');
-      stage.classList.remove('blurred');
+      ramoE1.classList.remove('blurred');
     }
 
     tulips.forEach((t, idx)=>{
