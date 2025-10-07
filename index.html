@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ramo de Tulipanes — Experiencia Interactiva</title>
+  <meta name="description" content="Ramo interactivo de 5 tulipanes rosa pastel. Haz clic en cada flor para ver un mensaje." />
+  <style>
+    :root{
+      --palo-rosa: #F8D7DA;       /* fondo palo rosa suave */
+      --destello: rgba(255,255,255,0.88);
+      --accent: #ff7ab6;          /* acento palo rosa */
+      --text: #2c2c2c;
+      --blur-strength: 6px;
+      --tulip-width: 150px;
+      --page-padding: 18px;
+      --max-width: 1200px;
+      --shadow: 0 12px 30px rgba(0,0,0,0.12);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;overflow:hidden}
+    body{background:var(--palo-rosa);display:flex;align-items:center;justify-content:center;padding:var(--page-padding);color:var(--text)}
+    #stage{position:relative;width:100%;max-width:var(--max-width);height:100vh;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0.15));box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+    /* Destellos blancos suaves */
+    .shimmer{position:absolute;inset:0;pointer-events:none;z-index:2;
+      background-image:
+        radial-gradient(ellipse at 25% 20%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.0) 20%),
+        radial-gradient(ellipse at 75% 80%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.0) 22%);
+      opacity:0.9;mix-blend-mode:screen;filter:blur(6px);
+      animation: shimmerMove 10s linear infinite;
+    }
+    @keyframes shimmerMove{0%{transform:translate(-6%,-4%) scale(1)}50%{transform:translate(6%,4%) scale(1.02)}100%{transform:translate(-6%,-4%) scale(1)}}
+
+    /* Ramo central */
+    .ramo{position:relative;z-index:10;display:flex;align-items:flex-end;gap:22px;transform:translateY(4%);pointer-events:auto}
+    .tulip-wrap{width:var(--tulip-width);display:flex;align-items:flex-end;justify-content:center;transform-origin:50% 100%}
+    .tulip{width:100%;height:auto;display:block;border-radius:10px;cursor:pointer;user-select:none;transform-origin:50% 100%;box-shadow:0 10px 28px rgba(0,0,0,0.12);transition:transform .26s cubic-bezier(.2,.9,.3,1), filter .18s;will-change:transform, filter}
+    .tulip:active{transform:translateY(6px) scale(.98)}
+
+    /* Entrada suave escalonada */
+    .tulip-wrap{opacity:0;transform:translateY(18px) scale(.95)}
+    .tulip-wrap:nth-child(1){animation:popIn .7s .05s both cubic-bezier(.2,.9,.3,1)}
+    .tulip-wrap:nth-child(2){animation:popIn .7s .12s both cubic-bezier(.2,.9,.3,1)}
+    .tulip-wrap:nth-child(3){animation:popIn .7s .19s both cubic-bezier(.2,.9,.3,1)}
+    .tulip-wrap:nth-child(4){animation:popIn .7s .26s both cubic-bezier(.2,.9,.3,1)}
+    .tulip-wrap:nth-child(5){animation:popIn .7s .33s both cubic-bezier(.2,.9,.3,1)}
+    @keyframes popIn{0%{opacity:0;transform:translateY(18px) scale(.95)}60%{opacity:1;transform:translateY(-6px) scale(1.03)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+    /* Posiciones organicas (rotaciones / offsets) */
+    .tulip-wrap.pos1{transform:translateY(14px) rotate(-8deg) scale(.98}
+    .tulip-wrap.pos2{transform:translateY(8px) rotate(6deg) scale(.95)}
+    .tulip-wrap.pos3{transform:translateY(0px) rotate(-2deg) scale(1.08)}
+    .tulip-wrap.pos4{transform:translateY(8px) rotate(10deg) scale(.96)}
+    .tulip-wrap.pos5{transform:translateY(12px) rotate(-4deg) scale(.97)}
+
+    .ramo:after{content:'';position:absolute;bottom:8%;left:50%;transform:translateX(-50%);width:56%;height:18px;background:radial-gradient(ellipse at center, rgba(0,0,0,0.12), rgba(0,0,0,0.0));border-radius:50%;z-index:1}
+
+    /* Modal / overlay */
+    .overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.36);z-index:60;padding:20px}
+    .overlay.show{display:flex}
+    .dialog{background:#fff;width:100%;max-width:520px;border-radius:12px;padding:20px;box-shadow:0 16px 40px rgba(0,0,0,0.22);text-align:center}
+    .dialog h2{margin:6px 0 10px;color:var(--accent);font-size:20px}
+    .dialog p{margin:0 0 16px;color:var(--text);line-height:1.4}
+    .actions{display:flex;gap:8px;justify-content:center}
+    .btn{border:none;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+    .btn.prim{background:var(--accent);color:white}
+    .btn.sec{background:transparent;border:2px solid rgba(0,0,0,0.06);color:var(--text)}
+
+    /* Blur applied to stage when modal open */
+    .blurred{filter:blur(var(--blur-strength));transition:filter .24s;pointer-events:none;opacity:.99}
+
+    /* Audio control */
+    .audio-control{position:absolute;top:18px;right:18px;z-index:80;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.72);backdrop-filter:blur(6px);padding:8px 12px;border-radius:999px;box-shadow:0 8px 20px rgba(0,0,0,0.08)}
+    .audio-control button{border:none;background:none;cursor:pointer;font-weight:700;color:var(--accent)}
+
+    .note{position:absolute;left:20px;bottom:18px;font-size:13px;color:#666;z-index:80}
+
+    @media (max-width:720px){:root{--tulip-width:110px} .dialog{padding:16px}}
+  </style>
+</head>
+<body>
+  <div id="stage" role="main" aria-label="Ramo de tulipanes interactivo">
+    <div class="shimmer" aria-hidden="true"></div>
+
+    <div class="audio-control" id="audioControl" aria-hidden="false" title="Control de música">
+      <button id="playBtn" aria-label="Reproducir/pausar">▶︎</button>
+      <span style="font-size:13px;color:#333">Música</span>
+    </div>
+
+    <div class="ramo" id="ramo" aria-hidden="false">
+      <div class="tulip-wrap pos1"><img class="tulip" src="https://images.unsplash.com/photo-1524594154907-6b1c8c5f0b0f?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 1" data-index="0"></div>
+      <div class="tulip-wrap pos2"><img class="tulip" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 2" data-index="1"></div>
+      <div class="tulip-wrap pos3"><img class="tulip" src="https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 3" data-index="2"></div>
+      <div class="tulip-wrap pos4"><img class="tulip" src="https://images.unsplash.com/photo-1470167290877-7d5d3447f58b?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 4" data-index="3"></div>
+      <div class="tulip-wrap pos5"><img class="tulip" src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=" alt="Tulipán 5" data-index="4"></div>
+    </div>
+
+    <div class="note">Haz clic en cada tulipán para ver su mensaje.</div>
+  </div>
+
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="dialog" id="dialog">
+      <h2 id="dialogTitle">Título editable</h2>
+      <p id="dialogText">Texto editable por flor.</p>
+      <div class="actions">
+        <button class="btn sec" id="closeBtn">Cerrar</button>
+        <button class="btn prim" id="nextBtn">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* -------------------------
+       CONFIGURACIÓN: Edita aquí
+       ------------------------- */
+    const MESSAGES = [
+      { title: "Tulipán 1", text: "Mensaje para el primer tulipán." },
+      { title: "Tulipán 2", text: "Mensaje para el segundo tulipán." },
+      { title: "Tulipán 3", text: "Mensaje para el tercer tulipán." },
+      { title: "Tulipán 4", text: "Mensaje para el cuarto tulipán." },
+      { title: "Tulipán 5", text: "Mensaje para el quinto tulipán." }
+    ];
+
+    const TULIP_URLS = [
+      'https://images.unsplash.com/photo-1524594154907-6b1c8c5f0b0f?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
+      'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
+      'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
+      'https://images.unsplash.com/photo-1470167290877-7d5d3447f58b?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s=',
+      'https://images.unsplash.com/photo-1524758631624-e2822e304c36?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.0.3&s='
+    ];
+
+    const AUDIO_SRC = 'https://docs.google.com/uc?export=download&id=1VKw9AfTziD_mw7kVuIvX4eybVG-e9daG';
+
+    /* -------------------------
+       LÓGICA (no hace falta editar)
+       ------------------------- */
+    const tulips = document.querySelectorAll('.tulip');
+    const overlay = document.getElementById('overlay');
+    const dialogTitle = document.getElementById('dialogTitle');
+    const dialogText = document.getElementById('dialogText');
+    const closeBtn = document.getElementById('closeBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const stage = document.getElementById('stage');
+    const playBtn = document.getElementById('playBtn');
+    let currentIndex = 0;
+
+    function applyTulips(){ document.querySelectorAll('.tulip').forEach((img,i)=> img.src = TULIP_URLS[i % TULIP_URLS.length]); }
+    applyTulips();
+
+    // Audio setup
+    let audio = new Audio(AUDIO_SRC);
+    audio.loop = true;
+    audio.preload = 'auto';
+    let audioStarted = false;
+
+    function tryPlayAudio(){
+      audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{ audioStarted=false; playBtn.textContent='▶︎'; console.warn('Autoplay bloqueado'); });
+    }
+    window.addEventListener('load', ()=>{ tryPlayAudio(); });
+
+    playBtn.addEventListener('click', ()=>{
+      if(!audioStarted){ audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{ alert('Reproducción bloqueada; intenta interactuar con la página primero.') }); }
+      else{ audio.pause(); audioStarted=false; playBtn.textContent='▶︎'; }
+    });
+
+    function openModal(i){
+      currentIndex = i;
+      dialogTitle.textContent = MESSAGES[i].title;
+      dialogText.textContent = MESSAGES[i].text;
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+      stage.classList.add('blurred');
+    }
+    function closeModal(){
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden','true');
+      stage.classList.remove('blurred');
+    }
+
+    tulips.forEach((t, idx)=>{
+      t.addEventListener('click', ()=>{
+        openModal(idx);
+        if(!audioStarted){ audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{}); }
+      });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    nextBtn.addEventListener('click', ()=>{ currentIndex = (currentIndex + 1) % MESSAGES.length; openModal(currentIndex); });
+    overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeModal(); });
+
+    // Accessibility: close with ESC
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+  </script>
+</body>
+</html>
