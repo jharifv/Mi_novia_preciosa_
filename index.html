@@ -136,22 +136,6 @@ const TULIP_URLS = [
     function applyTulips(){ document.querySelectorAll('.tulip').forEach((img,i)=> img.src = TULIP_URLS[i % TULIP_URLS.length]); }
     applyTulips();
 
-    // Audio setup
-    let audio = new Audio(AUDIO_SRC);
-    audio.loop = true;
-    audio.preload = 'auto';
-    let audioStarted = false;
-
-    function tryPlayAudio(){
-      audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{ audioStarted=false; playBtn.textContent='▶︎'; console.warn('Autoplay bloqueado'); });
-    }
-    window.addEventListener('load', ()=>{ tryPlayAudio(); });
-
-    playBtn.addEventListener('click', ()=>{
-      if(!audioStarted){ audio.play().then(()=>{ audioStarted=true; playBtn.textContent='⏸' }).catch(()=>{ alert('Reproducción bloqueada; intenta interactuar con la página primero.') }); }
-      else{ audio.pause(); audioStarted=false; playBtn.textContent='▶︎'; }
-    });
-
     function openModal(i){
       currentIndex = i;
       dialogTitle.textContent = MESSAGES[i].title;
