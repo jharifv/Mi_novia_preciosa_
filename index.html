@@ -157,12 +157,12 @@ const ramoEl = document.getElementById('ramo'); // referencia para blur
       dialogText.textContent = MESSAGES[i].text;
       overlay.classList.add('show');
       overlay.setAttribute('aria-hidden','false');
-      ramoE1.classList.add('blurred');
+      ramoEl.classList.add('blurred');
     }
     function closeModal(){
       overlay.classList.remove('show');
       overlay.setAttribute('aria-hidden','true');
-      ramoE1.classList.remove('blurred');
+      ramoEl.classList.remove('blurred');
     }
 
     tulips.forEach((t, idx) => {
